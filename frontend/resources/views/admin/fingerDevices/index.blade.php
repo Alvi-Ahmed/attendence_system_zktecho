@@ -24,7 +24,7 @@
 
                 </a> --}}
 
-                <a class="btn btn-primary"
+                {{-- <a class="btn btn-primary"
 
                    href="{{ route('finger_device.clear.attendance') }}">
 
@@ -32,7 +32,7 @@
 
                     Clear device attendance
 
-                </a>
+                </a> --}}
 
             </div>
 
@@ -105,9 +105,26 @@
                         $helper = new \App\Helpers\FingerHelper();
 
                     @endphp
+                    {{-- <tbody>
+                        @foreach($record as $key => $records)
+
+                        <tr data-entry-id="{{ $records->id }}">
+
+                          
+
+                            <td>
+
+                                {{ $records->id ?? '' }}
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+                      --}}
+
 
                     <tbody>
-
+                       
                     @foreach($devices as $key => $finger_device)
 
                         <tr data-entry-id="{{ $finger_device->id }}">
@@ -262,7 +279,7 @@
 
 @section('scripts')
 
-    @parent
+    
 
     {{--    @livewireScripts--}}
 
@@ -366,10 +383,7 @@
 
 
 
-        })
-
-
-
+        });
     </script>
 
 @endsection

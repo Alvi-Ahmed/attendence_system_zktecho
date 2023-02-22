@@ -102,7 +102,7 @@ class BiometricDeviceController extends Controller
         try {
             $fingerDevice->delete();
         } catch (\Exception $e) {
-            toast("Failed to delete {$fingerDevice->name}", 'error');
+           // toast("Failed to delete {$fingerDevice->name}", 'error');
         }
 
         flash()->success('Success', 'Biometric Device deleted successfully !');
@@ -139,9 +139,21 @@ class BiometricDeviceController extends Controller
         $device->connect();
 
         $data = $device->getAttendance();
+    //     $user = $device->getUser();
+    //    // dd($user);
+    //     foreach ($user as $key => $uservalue) {
+    //         //dd($uservalue['uid']);
+    //     $usr_table = new Employee();
+    //     $usr_table->id = $uservalue['uid'];
+    //     $usr_table->save();
+        
+    //     }
         
         foreach ($data as $key => $value) {
-            if( $value['type']==0){
+            //dd($value['type']);
+            
+           if( $value['type']==255){
+           // dd( $value['timestamp']);
             if ($employee = Employee::whereId($value['id'])->first()) {
                 if (
                     !Attendance::whereAttendance_date(date('Y-m-d', strtotime($value['timestamp'])))
@@ -151,23 +163,32 @@ class BiometricDeviceController extends Controller
                 ) {
                     $att_table = new Attendance();
                     $att_table->uid = $value['uid'];
+                    //dd($value['uid']);
+                    echo $value['id'];
+                    echo $value['state'];
+                    
                     $att_table->emp_id = $value['id'];
                     $att_table->state = $value['state'];
-                    $att_table->attendance_time = date('H:i:s', strtotime($value['timestamp']));
-                    $att_table->attendance_date = date('Y-m-d', strtotime($value['timestamp']));
+                    //$att_table->attendance_time = date('H:i:s', strtotime($value['timestamp']));
+                    $att_table->attendance_date = $value['timestamp'];
                     $att_table->type = $value['type'];
 
-                    if (!($employee->schedules->first()->time_in >= $att_table->attendance_time)) {
-                        $att_table->status = 0;
-                        AttendanceController::lateTimeDevice($value['timestamp'],$employee);
-                    }
+                    // if (!($employee->schedules->first()->time_in >= $att_table->attendance_time)) {
+                    //     $att_table->status = 0;
+                    //     AttendanceController::lateTimeDevice($value['timestamp'],$employee);
+                    // }
                     $att_table->save();
                 }
             }
-        }
+          
+       }
+       
     
         else{
+           
        
+            
+                
             if ($employee = Employee::whereId($value['id'])->first()) {
                 if (
                     !Leave::whereLeave_date(date('Y-m-d', strtotime($value['timestamp'])))
@@ -183,17 +204,19 @@ class BiometricDeviceController extends Controller
                     $lve_table->leave_date = date('Y-m-d', strtotime($value['timestamp']));
                     $lve_table->type = $value['type'];
 
-                    if (!($employee->schedules->first()->time_out<=$lve_table->leave_time)) {
-                        $lve_table->status = 0;
+                    // if (!($employee->schedules->first()->time_out<=$lve_table->leave_time)) {
+                    //     $lve_table->status = 0;
                         
-                    } 
-                    else {
-                        leaveController::overTimeDevice($value['timestamp'],$employee);
-                    }
+                    // } 
+                    // else {
+                    //     leaveController::overTimeDevice($value['timestamp'],$employee);
+                    // }
                     $lve_table->save();
                 }
             }
+            
         }
+      //  return route('finger_device.index')->with(['record'=>$value]);
         }
 
         
@@ -201,4 +224,5 @@ class BiometricDeviceController extends Controller
 
         return back();
     }
+
 }
