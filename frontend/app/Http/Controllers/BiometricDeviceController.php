@@ -139,38 +139,44 @@ class BiometricDeviceController extends Controller
         $device->connect();
 
         $data = $device->getAttendance();
-    //     $user = $device->getUser();
-    //    // dd($user);
-    //     foreach ($user as $key => $uservalue) {
-    //         //dd($uservalue['uid']);
-    //     $usr_table = new Employee();
-    //     $usr_table->id = $uservalue['uid'];
-    //     $usr_table->save();
+        $user = $device->getUser();
+       //dd($user);
+        // foreach ($user as $key => $uservalue) {
+        //     //dd($uservalue['uid']);
+        // $usr_table = new Employee();
+        // //$usr_table->id = $uservalue['uid'];
+        // $usr_table->emp_id = $uservalue['userid'];
+        // $usr_table->save();
         
-    //     }
+        // }
+//    dd($user);
+//dd($data);
         
         foreach ($data as $key => $value) {
-            //dd($value['type']);
-            
+           
+            //dd($value['id']);
            if( $value['type']==255){
-           // dd( $value['timestamp']);
-            if ($employee = Employee::whereId($value['id'])->first()) {
+           //dd( $value['timestamp']);
+            if ( Employee::whereEmp_id($value['id'])->first()) {
+                print_r($value['uid']);
+               
                 if (
                     !Attendance::whereAttendance_date(date('Y-m-d', strtotime($value['timestamp'])))
                         ->whereEmp_id($value['id'])
-                        ->whereType(0)
+                        ->whereType(255)
                         ->first()
+                        
                 ) {
-                    $att_table = new Attendance();
-                    $att_table->uid = $value['uid'];
-                    //dd($value['uid']);
-                    echo $value['id'];
-                    echo $value['state'];
                     
+                    $att_table = new Attendance();
+                   // $att_table->uid = $value['uid'];
+                    //dd($value['uid']);
+                    // echo $value['id'];
+                    // echo $value['state'];
                     $att_table->emp_id = $value['id'];
                     $att_table->state = $value['state'];
-                    //$att_table->attendance_time = date('H:i:s', strtotime($value['timestamp']));
-                    $att_table->attendance_date = $value['timestamp'];
+                    $att_table->attendance_time = date('H:i:s', strtotime($value['timestamp']));
+                    $att_table->attendance_date = date('Y-m-d', strtotime($value['timestamp']));
                     $att_table->type = $value['type'];
 
                     // if (!($employee->schedules->first()->time_in >= $att_table->attendance_time)) {
@@ -178,15 +184,23 @@ class BiometricDeviceController extends Controller
                     //     AttendanceController::lateTimeDevice($value['timestamp'],$employee);
                     // }
                     $att_table->save();
+                    
                 }
+                else{
+                    continue;
+                }
+                
+            }else{
+                continue;
             }
-          
+            
+           
        }
        
     
         else{
            
-       
+       dd("else is here");
             
                 
             if ($employee = Employee::whereId($value['id'])->first()) {
@@ -220,9 +234,9 @@ class BiometricDeviceController extends Controller
         }
 
         
-        flash()->success('Success', 'Attendance Queue will run in a minute!');
+        //flash()->success('Success', 'Attendance Queue will run in a minute!');
 
-        return back();
+        //return back();
     }
 
 }

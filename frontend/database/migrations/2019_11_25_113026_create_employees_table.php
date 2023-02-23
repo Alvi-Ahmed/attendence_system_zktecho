@@ -15,9 +15,10 @@ class CreateEmployeesTable extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
           
-            $table->Increments('id')->from(111)->unsigned();
-            $table->string('name');
-            $table->string('position');
+            $table->Increments('id');
+            $table->string('name')->nullable();
+            $table->string('emp_id');
+            $table->string('position')->nullable();
             $table->string('email')->nullable()->unique();
             $table->string('pin_code')->nullable();
             $table->text('permissions')->nullable();
